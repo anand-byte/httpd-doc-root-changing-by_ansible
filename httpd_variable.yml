@@ -1,0 +1,4 @@
+http_port: 80
+doc_root: "/var/www/lw"
+dvd_dir: "/dvd"
+conf_file_httpd: "/etc/httpd/conf.d/httpd_doc_root.yml"

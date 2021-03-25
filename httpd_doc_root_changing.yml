@@ -1,0 +1,51 @@
+- hosts: all
+  vars_files:
+  - httpd_variable.yml         
+  vars: 
+  - dvd_location: "/dev/cdrom"
+  tasks:
+    - name: "creating Directory for mountiing"
+      file:
+              state: directory
+              path: "{{ dvd_dir }}"
+
+    - name: "mounting the dvd"
+      mount:
+              src: "{{ dvd_location }}"
+              path: "{{ dvd_dir }}"
+              state: mounted
+              fstype: "iso9660"
+    - name: "yum configuration"
+      yum_repository:
+              baseurl: "{{ dvd_dir }}/AppStream"
+              name: "dvd1"
+              description: "Appstream folder"
+              gpgcheck: no
+    - name: "yum config"          
+      yum_repository:
+              baseurl: "{{ dvd_dir }}/BaseOS"     
+              name: "dvd2"     
+              description: "BaseOS folder"
+              gpgcheck: no
+    - name: "installing httpd"
+      package:
+              name: "httpd"
+              state: present
+    - name: " customising document root of apache webserver"
+      file:
+              state: directory
+              path: "{{ doc_root }}"
+    - name: " copying file to the document root"
+      template:
+              src: "{{conf_file_httpd }}"
+              dest: "{{ doc_root }}"      
+    - name: "starting httpd"
+      service:        
+              name: "httpd"
+              state: started
+    - name: "setting up firewall rule"
+      firewalld:
+              port: "{{http_port}}/tcp"
+              state: enabled
+              permanent: yes
+              immediate: yes

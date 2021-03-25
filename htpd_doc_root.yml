@@ -1,0 +1,5 @@
+listen {{ http_port }}
+<virtualhost {{ansible_default_ipv4['address']}}:{{ http_port }}>
+documentroot "/var/www/lw"
+</virtualhost>
+
